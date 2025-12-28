@@ -20,56 +20,80 @@
 // false = No
   "HM_MuteDefaultHeadShotBodyShot": false,
 
-// HeadShot icon text (Example: X or ✕)
-  "HM_HeadShotIcon": "✕",
-
 // HeadShot icon color (#RRGGBB or color name)
   "HM_HeadShotColor": "#FF0000",
 
-// HeadShot icon font size
-  "HM_HeadShotFontSize": 20,
-
 // HeadShot icon display duration (seconds)
-  "HM_HeadShotDuration": 0.3,
-
-// BodyShot icon text (Example: +)
-  "HM_BodyShotIcon": "✕",
+  "HM_HeadShotDuration": 0.2,
 
 // BodyShot icon color (#RRGGBB or color name)
   "HM_BodyShotColor": "#FFFFFF",
 
-// BodyShot icon font size
-  "HM_BodyShotFontSize": 18,
-
 // BodyShot icon display duration (seconds)
-  "HM_BodyShotDuration": 0.25,
+  "HM_BodyShotDuration": 0.2,
 
 // Font name used for HitMark HUD text
-  "HM_FontName": "Arial Rounded MT Bold",
+  "HM_FontName": "Bahnschrift Bold",
+
+// World units per pixel for GameHUD text (smaller = sharper)
+  "HM_FontUnits": 0.18,
+
+// Hit character that appears on damage (e.g. ✚)
+  "HM_HitChar": "✚",
+
+// Hit character starting font size
+  "HM_HitScaleStart": 8,
+
+// Hit character target font size
+  "HM_HitScaleEnd": 8,
+
+// Hit character scale animation duration (seconds)
+  "HM_HitScaleDuration": 0.1,
+
+// Hit character scale animation steps (1-30)
+  "HM_HitScaleSteps": 15,
 
 // Show damage value next to icon? true = Yes / false = No
   "HM_ShowDamageValue": true,
 
 // Damage number color (#RRGGBB or color name)
-  "HM_DamageColor": "#FFFFFF",
+  "HM_DamageColor": "#FFD966",
 
-// Damage number font size
-  "HM_DamageFontSize": 20,
+// Damage number color on headshot (#RRGGBB or color name)
+  "HM_DamageHeadShotColor": "#FF4D4D",
+
+// Damage number font size (0 hides the value)
+  "HM_DamageFontSize": 10,
 
 // Damage number display duration (seconds)
-  "HM_DamageDuration": 0.3,
+  "HM_DamageDuration": 0.2,
 
 // Damage number horizontal offset relative to icon (-30 to 30 recommended)
-  "HM_DamageOffsetX": 5.5,
+  "HM_DamageOffsetX": 3.5,
 
 // Damage number vertical offset relative to icon (-15 to 15 recommended)
-  "HM_DamageOffsetY": 3.5,
+  "HM_DamageOffsetY": 1.5,
+
+// Damage motion mode: 0 = Static, 1 = Random bounce
+  "HM_DamageMotionMode": 1,
+
+// Random horizontal jitter range when motion enabled
+  "HM_DamageJitterRangeX": 0.9,
+
+// Random vertical jitter range when motion enabled
+  "HM_DamageJitterRangeY": 0.6,
+
+// Peak height added during bounce (motion mode 1)
+  "HM_DamageBounceHeight": 1.8,
+
+// Bounce duration in seconds (motion mode 1)
+  "HM_DamageBounceDuration": 0.35,
 
 // Horizontal HUD offset relative to view origin (-50 to 50 recommended)
-  "HM_HudOffsetX": 0,
+  "HM_HudOffsetX": 3,
 
 // Vertical HUD offset relative to view origin (-10 to 10 recommended)
-  "HM_HudOffsetY": 0,
+  "HM_HudOffsetY": 2,
 
 // Distance from player view to HUD text (40 to 70 recommended)
   "HM_HudDistance": 42,

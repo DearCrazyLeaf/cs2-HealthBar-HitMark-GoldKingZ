@@ -46,15 +46,20 @@ Show HealthBar , Custom HitMarks , Custom Sounds
 | `HM_MuteDefaultHeadShotBodyShot` | Mute default hit sounds when custom sounds exist | `true`/`false` | - |  
 | `HM_HeadShotIcon` | Text/icon displayed for headshots | Any short text | `HM_EnableHitMark=true` |  
 | `HM_HeadShotColor` | Headshot icon color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` |  
-| `HM_HeadShotFontSize` | Headshot icon font size | `8-72` | `HM_EnableHitMark=true` |  
 | `HM_HeadShotDuration` | Headshot icon duration (seconds) | `float` | `HM_EnableHitMark=true` |  
 | `HM_BodyShotIcon` | Text/icon displayed for body shots | Any short text | `HM_EnableHitMark=true` |  
 | `HM_BodyShotColor` | Body shot icon color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` |  
-| `HM_BodyShotFontSize` | Body shot icon font size | `8-72` | `HM_EnableHitMark=true` |  
 | `HM_BodyShotDuration` | Body shot icon duration (seconds) | `float` | `HM_EnableHitMark=true` |  
 | `HM_FontName` | HUD font family | Installed font name | `HM_EnableHitMark=true` |  
+| `HM_FontUnits` | GameHUD world units-per-pixel (smaller = crisper) | `0.05-1.0` | `HM_EnableHitMark=true` |  
+| `HM_HitChar` | Glyph rendered for hit confirmation | Single character / short text | `HM_EnableHitMark=true` |  
+| `HM_HitScaleStart` | Starting font size for `HM_HitChar` animation | `1-72` | `HM_EnableHitMark=true` |  
+| `HM_HitScaleEnd` | Target font size reached by animation | `>= HM_HitScaleStart` | `HM_EnableHitMark=true` |  
+| `HM_HitScaleDuration` | How long the scale animation lasts (seconds) | `0.01-1.0` | `HM_EnableHitMark=true` |  
+| `HM_HitScaleSteps` | Number of interpolation steps for scaling | `1-10` | `HM_EnableHitMark=true` |  
 | `HM_ShowDamageValue` | Append damage digits after the icon | `true`/`false` | `HM_EnableHitMark=true` |  
 | `HM_DamageColor` | Damage number color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_DamageHeadShotColor` | Damage color override for headshots | String | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
 | `HM_DamageFontSize` | Damage number font size | `8-72` | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
 | `HM_DamageDuration` | Damage number duration (seconds) | `float` | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
 | `HM_DamageOffsetX` | Damage number X offset relative to icon (-30 to 30) | Float | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  

@@ -226,28 +226,14 @@ namespace HealthBar_HitMark_GoldKingZ.Config
             [Comment("Mute Default HeadShot And BodyShot Only On If There Is Custom Sounds?\ntrue = Yes\nfalse = No")]
             public bool HM_MuteDefaultHeadShotBodyShot { get; set; }
 
-            [Comment("HeadShot icon text (Example: X or ✕)")]
-            public string HM_HeadShotIcon { get; set; }
-
             [Comment("HeadShot icon color (#RRGGBB or color name)")]
             public string HM_HeadShotColor { get; set; }
-
-            [Comment("HeadShot icon font size")]
-            [Range(8, 72, 26, "[HitMark] HM_HeadShotFontSize invalid. Using 26 (8-72)")]
-            public int HM_HeadShotFontSize { get; set; }
 
             [Comment("HeadShot icon display duration (seconds)")]
             public float HM_HeadShotDuration { get; set; }
 
-            [Comment("BodyShot icon text (Example: +)")]
-            public string HM_BodyShotIcon { get; set; }
-
             [Comment("BodyShot icon color (#RRGGBB or color name)")]
             public string HM_BodyShotColor { get; set; }
-
-            [Comment("BodyShot icon font size")]
-            [Range(8, 72, 22, "[HitMark] HM_BodyShotFontSize invalid. Using 22 (8-72)")]
-            public int HM_BodyShotFontSize { get; set; }
 
             [Comment("BodyShot icon display duration (seconds)")]
             public float HM_BodyShotDuration { get; set; }
@@ -255,14 +241,36 @@ namespace HealthBar_HitMark_GoldKingZ.Config
             [Comment("Font name used for HitMark HUD text")]
             public string HM_FontName { get; set; }
 
+            [Comment("World units per pixel for GameHUD text (smaller = sharper)")]
+            public float HM_FontUnits { get; set; }
+
+            [Comment("Hit character that appears on damage (e.g. ✚)")]
+            public string HM_HitChar { get; set; }
+
+            [Comment("Hit character starting font size")]
+            public float HM_HitScaleStart { get; set; }
+
+            [Comment("Hit character target font size")]
+            public float HM_HitScaleEnd { get; set; }
+
+            [Comment("Hit character scale animation duration (seconds)")]
+            public float HM_HitScaleDuration { get; set; }
+
+            [Comment("Hit character scale animation steps (1-30)")]
+            [Range(1, 30, 5, "[HitMark] HM_HitScaleSteps invalid. Using 5 (1-30)")]
+            public int HM_HitScaleSteps { get; set; }
+
             [Comment("Show damage value next to icon? true = Yes / false = No")]
             public bool HM_ShowDamageValue { get; set; }
 
             [Comment("Damage number color (#RRGGBB or color name)")]
             public string HM_DamageColor { get; set; }
 
-            [Comment("Damage number font size")]
-            [Range(8, 72, 20, "[HitMark] HM_DamageFontSize invalid. Using 20 (8-72)")]
+            [Comment("Damage number color on headshot (#RRGGBB or color name)")]
+            public string HM_DamageHeadShotColor { get; set; }
+
+            [Comment("Damage number font size (0 hides the value)")]
+            [Range(0, 72, 20, "[HitMark] HM_DamageFontSize invalid. Using 20 (0-72)")]
             public int HM_DamageFontSize { get; set; }
 
             [Comment("Damage number display duration (seconds)")]
@@ -273,6 +281,21 @@ namespace HealthBar_HitMark_GoldKingZ.Config
 
             [Comment("Damage number vertical offset relative to icon (-15 to 15 recommended)")]
             public float HM_DamageOffsetY { get; set; }
+
+            [Comment("Damage motion mode: 0 = Static, 1 = Random bounce")]
+            public int HM_DamageMotionMode { get; set; }
+
+            [Comment("Random horizontal jitter range when motion enabled")]
+            public float HM_DamageJitterRangeX { get; set; }
+
+            [Comment("Random vertical jitter range when motion enabled")]
+            public float HM_DamageJitterRangeY { get; set; }
+
+            [Comment("Peak height added during bounce (motion mode 1)")]
+            public float HM_DamageBounceHeight { get; set; }
+
+            [Comment("Bounce duration in seconds (motion mode 1)")]
+            public float HM_DamageBounceDuration { get; set; }
 
             [Comment("Horizontal HUD offset relative to view origin (-50 to 50 recommended)")]
             public float HM_HudOffsetX { get; set; }
@@ -299,21 +322,29 @@ namespace HealthBar_HitMark_GoldKingZ.Config
                 HM_EnableHitMark = true;
                 HM_DisableOnWarmUp = false;
                 HM_MuteDefaultHeadShotBodyShot = false;
-                HM_HeadShotIcon = "✕";
                 HM_HeadShotColor = "#FFFFFF";
-                HM_HeadShotFontSize = 26;
                 HM_HeadShotDuration = 0.5f;
-                HM_BodyShotIcon = "+";
                 HM_BodyShotColor = "#FFFFFF";
-                HM_BodyShotFontSize = 22;
                 HM_BodyShotDuration = 0.45f;
                 HM_FontName = "Bahnschrift";
+                HM_FontUnits = 0.18f;
+                HM_HitChar = "✚";
+                HM_HitScaleStart = 10f;
+                HM_HitScaleEnd = 18f;
+                HM_HitScaleDuration = 0.25f;
+                HM_HitScaleSteps = 5;
                 HM_ShowDamageValue = true;
-                HM_DamageColor = "#FFFFFF";
-                HM_DamageFontSize = 20;
+                HM_DamageColor = "#FFD966";
+                HM_DamageHeadShotColor = "#FF4D4D";
+                HM_DamageFontSize = 16;
                 HM_DamageDuration = 0.4f;
                 HM_DamageOffsetX = 3.5f;
                 HM_DamageOffsetY = 1.5f;
+                HM_DamageMotionMode = 1;
+                HM_DamageJitterRangeX = 0.9f;
+                HM_DamageJitterRangeY = 0.6f;
+                HM_DamageBounceHeight = 1.8f;
+                HM_DamageBounceDuration = 0.35f;
                 HM_HudOffsetX = 0f;
                 HM_HudOffsetY = 0f;
                 HM_HudDistance = 42f;
@@ -346,20 +377,31 @@ namespace HealthBar_HitMark_GoldKingZ.Config
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(HM_HeadShotIcon)) HM_HeadShotIcon = "✕";
-                if (string.IsNullOrWhiteSpace(HM_BodyShotIcon)) HM_BodyShotIcon = "+";
                 if (string.IsNullOrWhiteSpace(HM_HeadShotColor)) HM_HeadShotColor = "#FFFFFF";
                 if (string.IsNullOrWhiteSpace(HM_BodyShotColor)) HM_BodyShotColor = "#FFFFFF";
                 if (string.IsNullOrWhiteSpace(HM_FontName)) HM_FontName = "Bahnschrift";
+                if (HM_FontUnits < 0.05f || HM_FontUnits > 1f) HM_FontUnits = 0.18f;
+                if (string.IsNullOrWhiteSpace(HM_HitChar)) HM_HitChar = "✚";
+                if (HM_HitScaleStart < 1f) HM_HitScaleStart = 1f;
+                if (HM_HitScaleStart > 96f) HM_HitScaleStart = 96f;
+                if (HM_HitScaleEnd < 1f) HM_HitScaleEnd = 1f;
+                if (HM_HitScaleEnd > 96f) HM_HitScaleEnd = 96f;
+                if (HM_HitScaleDuration <= 0f || HM_HitScaleDuration > 1.0f) HM_HitScaleDuration = 0.25f;
                 if (string.IsNullOrWhiteSpace(HM_DamageColor)) HM_DamageColor = "#FFFFFF";
+                if (string.IsNullOrWhiteSpace(HM_DamageHeadShotColor)) HM_DamageHeadShotColor = "#FF4D4D";
                 if (HM_HeadShotDuration <= 0) HM_HeadShotDuration = 0.5f;
                 if (HM_BodyShotDuration <= 0) HM_BodyShotDuration = 0.45f;
                 if (HM_DamageDuration <= 0) HM_DamageDuration = 0.4f;
+                if (HM_DamageMotionMode < 0 || HM_DamageMotionMode > 1) HM_DamageMotionMode = 1;
                 if (HM_HudOffsetX < -50f || HM_HudOffsetX > 50f) HM_HudOffsetX = 0f;
                 if (HM_HudOffsetY < -10f || HM_HudOffsetY > 10f) HM_HudOffsetY = 0f;
                 if (HM_HudDistance < 35f || HM_HudDistance > 80f) HM_HudDistance = 42f;
                 if (HM_DamageOffsetX < -30f || HM_DamageOffsetX > 30f) HM_DamageOffsetX = 3.5f;
                 if (HM_DamageOffsetY < -15f || HM_DamageOffsetY > 15f) HM_DamageOffsetY = 1.5f;
+                if (HM_DamageJitterRangeX < 0f || HM_DamageJitterRangeX > 5f) HM_DamageJitterRangeX = 0.9f;
+                if (HM_DamageJitterRangeY < 0f || HM_DamageJitterRangeY > 5f) HM_DamageJitterRangeY = 0.6f;
+                if (HM_DamageBounceHeight < 0f || HM_DamageBounceHeight > 10f) HM_DamageBounceHeight = 1.8f;
+                if (HM_DamageBounceDuration <= 0f || HM_DamageBounceDuration > 1.0f) HM_DamageBounceDuration = 0.35f;
             }
         }
     }
