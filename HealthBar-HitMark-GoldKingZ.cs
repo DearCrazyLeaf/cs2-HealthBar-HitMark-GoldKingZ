@@ -147,20 +147,22 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
         float oldHealth = health + dmgHealth;
         if (oldHealth == health) return HookResult.Continue;
         
-        if(Configs.GetConfigData().HM_EnableHitMark)
+        var config = Configs.GetConfigData();
+        bool hitIconEnabled = config.HM_EnableHitMark;
+        bool damageNumbersEnabled = config.HM_ShowDamageValue && config.HM_DamageFontSize > 0;
+
+        if(!hitIconEnabled && !damageNumbersEnabled)
         {
-            if(!Configs.GetConfigData().HM_DisableOnWarmUp || Configs.GetConfigData().HM_DisableOnWarmUp && !Helper.IsWarmup())
-            {
-                if(Hitgroup == 1)
-                {
-                    Helper.StartHitMark(attacker, true, dmgHealth);
-                }
-                else
-                {
-                    Helper.StartHitMark(attacker, false, dmgHealth);
-                }
-            }
+            return HookResult.Continue;
         }
+
+        if(config.HM_DisableOnWarmUp && Helper.IsWarmup())
+        {
+            return HookResult.Continue;
+        }
+
+        bool isHeadShot = Hitgroup == 1;
+        Helper.StartHitMark(attacker, isHeadShot, dmgHealth);
         
         return HookResult.Continue;
     }

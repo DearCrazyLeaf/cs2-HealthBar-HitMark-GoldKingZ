@@ -252,7 +252,7 @@ public class Helper
         float damageBaseY = offsetY + config.HM_DamageOffsetY;
         var damageColor = ParseColor(config.HM_DamageColor, Color.White);
 
-        bool shouldInitHitIcon = !string.IsNullOrWhiteSpace(config.HM_HitChar);
+        bool shouldInitHitIcon = config.HM_EnableHitMark && !string.IsNullOrWhiteSpace(config.HM_HitChar);
         bool shouldInitDamageHud = config.HM_ShowDamageValue && config.HM_DamageFontSize > 0;
 
         try
@@ -315,14 +315,18 @@ public class Helper
         int displayDamage = Math.Max(0, damage);
         string damageText = displayDamage.ToString(CultureInfo.InvariantCulture);
         bool shouldShowDamageValue = config.HM_ShowDamageValue && config.HM_DamageFontSize > 0;
-        string glyph = string.IsNullOrWhiteSpace(config.HM_HitChar) ? "✚" : config.HM_HitChar.Trim();
+        bool shouldShowHitIcon = config.HM_EnableHitMark && !string.IsNullOrWhiteSpace(config.HM_HitChar);
+        string glyph = shouldShowHitIcon ? config.HM_HitChar.Trim() : string.Empty;
         float startScale = MathF.Max(1f, config.HM_HitScaleStart);
         float baseEndScale = MathF.Max(startScale, config.HM_HitScaleEnd);
         float targetScale = baseEndScale;
 
         try
         {
-            ShowHitIcon(api, player, offsetX, offsetY, offsetZ, color, glyph, duration, startScale, targetScale, config);
+            if (shouldShowHitIcon)
+            {
+                ShowHitIcon(api, player, offsetX, offsetY, offsetZ, color, glyph, duration, startScale, targetScale, config);
+            }
 
             if (shouldShowDamageValue)
             {

@@ -217,7 +217,7 @@ namespace HealthBar_HitMark_GoldKingZ.Config
             }
 
             [BreakLine("{space}----------------------------[ ↓ HitMark Config ↓ ]----------------------------{space}")]
-            [Comment("Enable HitMark?\ntrue = Yes\nfalse = No")]
+            [Comment("Enable HitMark icon?\nControls only the icon animation. Damage numbers are managed via HM_ShowDamageValue.\ntrue = Yes\nfalse = No")]
             public bool HM_EnableHitMark { get; set; }
 
             [Comment("Disable HitMark On WarmUp?\ntrue = Yes\nfalse = No")]
