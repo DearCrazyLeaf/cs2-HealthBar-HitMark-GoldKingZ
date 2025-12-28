@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
+using System.Collections.Generic;
 
 namespace HealthBar_HitMark_GoldKingZ.Config
 {
@@ -201,8 +202,6 @@ namespace HealthBar_HitMark_GoldKingZ.Config
         public class ConfigData
         {
             private string? _Version;
-            private string? _Link;
-            private string? _Our_WorkShop_ID;
             [BreakLine("----------------------------[ ↓ Plugin Info ↓ ]----------------------------{space}")]
             public string Version
             {
@@ -217,50 +216,9 @@ namespace HealthBar_HitMark_GoldKingZ.Config
                 }
             }
 
-            public string Link
-            {
-                get => _Link!;
-                set
-                {
-                    _Link = value;
-                    if (_Link != "https://github.com/oqyh/cs2-HealthBar-HitMark-GoldKingZ")
-                    {
-                        Link = "https://github.com/oqyh/cs2-HealthBar-HitMark-GoldKingZ";
-                    }
-                }
-            }
-            public string Our_WorkShop_ID
-            {
-                get => _Our_WorkShop_ID!;
-                set
-                {
-                    _Our_WorkShop_ID = value;
-                    if (_Our_WorkShop_ID != "3446191649")
-                    {
-                        Our_WorkShop_ID = "3446191649";
-                    }
-                }
-            }
-
-            [BreakLine("{space}----------------------------[ ↓ CS2 HealthBar Config ↓ ]----------------------------{space}")]
-
-            [Comment("Enable CS2 HealthBar?\ntrue = Yes\nfalse = No")]
-            public bool CS2_HealthBar { get; set; }
-
-            [Comment("Disable CS2 HealthBar On WarmUp?\ntrue = Yes\nfalse = No")]
-            public bool CS2_DisableOnWarmUp { get; set; }
-
-            [Comment("Required [CS2_HealthBar = true]\nHealthBar Style:\n0 = Green With Red\n1 = Orange With Grey\n2 = Green With Light Green\nTo Preview Check This link (https://github.com/oqyh/cs2-HealthBar-HitMark-GoldKingZ/blob/main/Resources/style.gif)")]
-            [Range(0, 2, 0, "[HealthBar] CS_DisplayHealthBarStyle: is invalid, setting to default value (0) Please Choose From 0 To 2.\n[HealthBar] HealthBar Style:\n[HealthBar] 0 = Green With Red\n[HealthBar] 1 = Orange With Grey\n[HealthBar] 2 = Green With Light Green\n[HealthBar] To Preview Check This link (https://github.com/oqyh/cs2-HealthBar-HitMark-GoldKingZ/blob/main/Resources/style.gif)")]
-            public int CS_DisplayHealthBarStyle { get; set; }
-
-            [Comment("Required [CS2_HealthBar = true]\nShow HealthBar To:\n1 = All\n2 = Attacker Only\n3 = Victim Team\n4 = Attacker Team")]
-            [Range(1, 4, 2, "[HealthBar] CS2_ShowHealthBarTo: is invalid, setting to default value (1) Please Choose From 1 To 4.\n[HealthBar] 1 = All\n[HealthBar] 2 = Attacker Only\n[HealthBar] 3 = Victim Team\n[HealthBar] 4 = Attacker Team")]
-            public int CS2_ShowHealthBarTo { get; set; }
-
             [BreakLine("{space}----------------------------[ ↓ HitMark Config ↓ ]----------------------------{space}")]
             [Comment("Enable HitMark?\ntrue = Yes\nfalse = No")]
-            public bool HM_HealthBar { get; set; }
+            public bool HM_EnableHitMark { get; set; }
 
             [Comment("Disable HitMark On WarmUp?\ntrue = Yes\nfalse = No")]
             public bool HM_DisableOnWarmUp { get; set; }
@@ -268,10 +226,68 @@ namespace HealthBar_HitMark_GoldKingZ.Config
             [Comment("Mute Default HeadShot And BodyShot Only On If There Is Custom Sounds?\ntrue = Yes\nfalse = No")]
             public bool HM_MuteDefaultHeadShotBodyShot { get; set; }
 
-            [Comment("SetUp HeadShot HitMark Per Players\n<PlayerFlag or PlayerGroup or PlayerSteam or ANY>|<Path>|<Optional SoundPath>\nANY = AnyOne\nFlags = @css/vips\nGroups = #css/vips\nSteamID = !STEAM_0:1:122910632 or !U:1:245821265 or !245821265 or !76561198206086993\nSoundPath = sounds/weapons/awp/awp_cliphit.vsnd")]
-            public List<string> HM_HeadShot { get; set; }
-            [Comment("SetUp BodyShot HitMark Per Players\n<PlayerFlag or PlayerGroup or PlayerSteam or ANY>|<Path>|<Optional SoundPath>\nANY = AnyOne\nFlags = @css/vips\nGroups = #css/vips\nSteamID = !STEAM_0:1:122910632 or !U:1:245821265 or !245821265 or !76561198206086993\nSoundPath = sounds/weapons/awp/awp_cliphit.vsnd")]
-            public List<string> HM_BodyShot { get; set; }
+            [Comment("HeadShot icon text (Example: X or ✕)")]
+            public string HM_HeadShotIcon { get; set; }
+
+            [Comment("HeadShot icon color (#RRGGBB or color name)")]
+            public string HM_HeadShotColor { get; set; }
+
+            [Comment("HeadShot icon font size")]
+            [Range(8, 72, 26, "[HitMark] HM_HeadShotFontSize invalid. Using 26 (8-72)")]
+            public int HM_HeadShotFontSize { get; set; }
+
+            [Comment("HeadShot icon display duration (seconds)")]
+            public float HM_HeadShotDuration { get; set; }
+
+            [Comment("BodyShot icon text (Example: +)")]
+            public string HM_BodyShotIcon { get; set; }
+
+            [Comment("BodyShot icon color (#RRGGBB or color name)")]
+            public string HM_BodyShotColor { get; set; }
+
+            [Comment("BodyShot icon font size")]
+            [Range(8, 72, 22, "[HitMark] HM_BodyShotFontSize invalid. Using 22 (8-72)")]
+            public int HM_BodyShotFontSize { get; set; }
+
+            [Comment("BodyShot icon display duration (seconds)")]
+            public float HM_BodyShotDuration { get; set; }
+
+            [Comment("Font name used for HitMark HUD text")]
+            public string HM_FontName { get; set; }
+
+            [Comment("Show damage value next to icon? true = Yes / false = No")]
+            public bool HM_ShowDamageValue { get; set; }
+
+            [Comment("Damage number color (#RRGGBB or color name)")]
+            public string HM_DamageColor { get; set; }
+
+            [Comment("Damage number font size")]
+            [Range(8, 72, 20, "[HitMark] HM_DamageFontSize invalid. Using 20 (8-72)")]
+            public int HM_DamageFontSize { get; set; }
+
+            [Comment("Damage number display duration (seconds)")]
+            public float HM_DamageDuration { get; set; }
+
+            [Comment("Damage number horizontal offset relative to icon (-30 to 30 recommended)")]
+            public float HM_DamageOffsetX { get; set; }
+
+            [Comment("Damage number vertical offset relative to icon (-15 to 15 recommended)")]
+            public float HM_DamageOffsetY { get; set; }
+
+            [Comment("Horizontal HUD offset relative to view origin (-50 to 50 recommended)")]
+            public float HM_HudOffsetX { get; set; }
+
+            [Comment("Vertical HUD offset relative to view origin (-10 to 10 recommended)")]
+            public float HM_HudOffsetY { get; set; }
+
+            [Comment("Distance from player view to HUD text (40 to 70 recommended)")]
+            public float HM_HudDistance { get; set; }
+
+            [Comment("Set up HeadShot sounds per player/group. Format: <PlayerFlag or Group or SteamID or ANY>|<SoundPath>")]
+            public List<string> HM_HeadShotSounds { get; set; }
+
+            [Comment("Set up BodyShot sounds per player/group. Format: <PlayerFlag or Group or SteamID or ANY>|<SoundPath>")]
+            public List<string> HM_BodyShotSounds { get; set; }
 
             [Comment("Enable Debug Plugin In Server Console (Helps You To Debug Issues You Facing)?\ntrue = Yes\nfalse = No")]
             [BreakLine("{space}----------------------------[ ↓ Utilities  ↓ ]----------------------------{space}")]
@@ -280,26 +296,36 @@ namespace HealthBar_HitMark_GoldKingZ.Config
             public ConfigData()
             {
                 Version = HealthBarHitMarkGoldKingZ.Instance.ModuleVersion;
-                Link = "https://github.com/oqyh/cs2-HealthBar-HitMark-GoldKingZ";
-                Our_WorkShop_ID = "3446191649";
-                CS2_HealthBar = true;
-                CS2_DisableOnWarmUp = false;
-                CS_DisplayHealthBarStyle = 0;
-                CS2_ShowHealthBarTo = 2;
-                HM_HealthBar = true;
+                HM_EnableHitMark = true;
                 HM_DisableOnWarmUp = false;
                 HM_MuteDefaultHeadShotBodyShot = false;
-                HM_HeadShot = new List<string>
+                HM_HeadShotIcon = "✕";
+                HM_HeadShotColor = "#FFFFFF";
+                HM_HeadShotFontSize = 26;
+                HM_HeadShotDuration = 0.5f;
+                HM_BodyShotIcon = "+";
+                HM_BodyShotColor = "#FFFFFF";
+                HM_BodyShotFontSize = 22;
+                HM_BodyShotDuration = 0.45f;
+                HM_FontName = "Bahnschrift";
+                HM_ShowDamageValue = true;
+                HM_DamageColor = "#FFFFFF";
+                HM_DamageFontSize = 20;
+                HM_DamageDuration = 0.4f;
+                HM_DamageOffsetX = 3.5f;
+                HM_DamageOffsetY = 1.5f;
+                HM_HudOffsetX = 0f;
+                HM_HudOffsetY = 0f;
+                HM_HudDistance = 42f;
+                HM_HeadShotSounds = new List<string>
                 {
-                    "ANY | particles/goldkingz/hitmark/hitmark_head.vpcf | sounds/goldkingz/hitmark/headshot.vsnd",
-                    "@css/vips,#css/vips | particles/goldkingz/hitmark/hitmark_head_2.vpcf | sounds/goldkingz/hitmark/headshot_2.vsnd",
-                    "!STEAM_0:1:122910632,!76561198974936845 | particles/goldkingz/hitmark/owner_hitmark_head.vpcf"
+                    "ANY | sounds/goldkingz/hitmark/headshot.vsnd",
+                    "@css/vips,#css/vips | sounds/goldkingz/hitmark/headshot_2.vsnd"
                 };
-                HM_BodyShot = new List<string>
+                HM_BodyShotSounds = new List<string>
                 {
-                    "ANY | particles/goldkingz/hitmark/hitmark_body.vpcf | sounds/goldkingz/hitmark/bodyhit.vsnd",
-                    "@css/vips,#css/vips | particles/goldkingz/hitmark/hitmark_body_2.vpcf | sounds/goldkingz/hitmark/bodyhit_2.vsnd",
-                    "!STEAM_0:1:122910632,!76561198974936845 | particles/goldkingz/hitmark/owner_hitmark_body.vpcf"
+                    "ANY | sounds/goldkingz/hitmark/bodyhit.vsnd",
+                    "@css/vips,#css/vips | sounds/goldkingz/hitmark/bodyhit_2.vsnd"
                 };
                 EnableDebug = false;
             }
@@ -319,6 +345,21 @@ namespace HealthBar_HitMark_GoldKingZ.Config
                         }
                     }
                 }
+
+                if (string.IsNullOrWhiteSpace(HM_HeadShotIcon)) HM_HeadShotIcon = "✕";
+                if (string.IsNullOrWhiteSpace(HM_BodyShotIcon)) HM_BodyShotIcon = "+";
+                if (string.IsNullOrWhiteSpace(HM_HeadShotColor)) HM_HeadShotColor = "#FFFFFF";
+                if (string.IsNullOrWhiteSpace(HM_BodyShotColor)) HM_BodyShotColor = "#FFFFFF";
+                if (string.IsNullOrWhiteSpace(HM_FontName)) HM_FontName = "Bahnschrift";
+                if (string.IsNullOrWhiteSpace(HM_DamageColor)) HM_DamageColor = "#FFFFFF";
+                if (HM_HeadShotDuration <= 0) HM_HeadShotDuration = 0.5f;
+                if (HM_BodyShotDuration <= 0) HM_BodyShotDuration = 0.45f;
+                if (HM_DamageDuration <= 0) HM_DamageDuration = 0.4f;
+                if (HM_HudOffsetX < -50f || HM_HudOffsetX > 50f) HM_HudOffsetX = 0f;
+                if (HM_HudOffsetY < -10f || HM_HudOffsetY > 10f) HM_HudOffsetY = 0f;
+                if (HM_HudDistance < 35f || HM_HudDistance > 80f) HM_HudDistance = 42f;
+                if (HM_DamageOffsetX < -30f || HM_DamageOffsetX > 30f) HM_DamageOffsetX = 3.5f;
+                if (HM_DamageOffsetY < -15f || HM_DamageOffsetY > 15f) HM_DamageOffsetY = 1.5f;
             }
         }
     }

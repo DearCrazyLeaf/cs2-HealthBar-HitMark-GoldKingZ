@@ -1,0 +1,5 @@
+////// vvvvvv Add Paths For Precache Resources Down vvvvvvvvvv //////
+sounds/goldkingz/hitmark/headshot.vsnd
+sounds/goldkingz/hitmark/bodyhit.vsnd
+sounds/goldkingz/hitmark/headshot_2.vsnd
+sounds/goldkingz/hitmark/bodyhit_2.vsnd

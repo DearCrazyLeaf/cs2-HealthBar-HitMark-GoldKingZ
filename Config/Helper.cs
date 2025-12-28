@@ -2,16 +2,23 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+using System;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using HealthBar_HitMark_GoldKingZ.Config;
 using System.Text.Encodings.Web;
 using CounterStrikeSharp.API.Core.Translations;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace HealthBar_HitMark_GoldKingZ;
 
 public class Helper
 {
+    private const byte HitmarkIconChannel = 10;
+    private const byte HitmarkDamageChannel = 11;
+
     public static void AdvancedPlayerPrintToChat(CCSPlayerController player, string message, params object[] args)
     {
         if (string.IsNullOrEmpty(message)) return;
@@ -160,41 +167,38 @@ public class Helper
         var g_Main = HealthBarHitMarkGoldKingZ.Instance.g_Main;
 
         g_Main.Player_Data.Clear();
-        g_Main.Particles_HS.Clear();
-        g_Main.Particles_BS.Clear();
     }
     
     public static void CreateResource(string jsonFilePath)
     {
         string headerLine = "////// vvvvvv Add Paths For Precache Resources Down vvvvvvvvvv //////";
-        string headerLine2 = "particles/goldkingz/hitmark/hitmark_head.vpcf";
-        string headerLine3 = "particles/goldkingz/hitmark/hitmark_body.vpcf";
-        string headerLine4 = "particles/goldkingz/hitmark/hitmark_head_2.vpcf";
-        string headerLine5 = "particles/goldkingz/hitmark/hitmark_body_2.vpcf";
+            string[] defaultLines = new[]
+            {
+                "sounds/goldkingz/hitmark/headshot.vsnd",
+                "sounds/goldkingz/hitmark/bodyhit.vsnd",
+                "sounds/goldkingz/hitmark/headshot_2.vsnd",
+                "sounds/goldkingz/hitmark/bodyhit_2.vsnd"
+            };
+
         if (!File.Exists(jsonFilePath))
         {
-            using (StreamWriter sw = File.CreateText(jsonFilePath))
+            using StreamWriter sw = File.CreateText(jsonFilePath);
+            sw.WriteLine(headerLine);
+            foreach (var line in defaultLines)
             {
-                sw.WriteLine(headerLine);
-                sw.WriteLine(headerLine2);
-                sw.WriteLine(headerLine3);
-                sw.WriteLine(headerLine4);
-                sw.WriteLine(headerLine5);
+                sw.WriteLine(line);
             }
+            return;
         }
-        else
+
+        string[] existingLines = File.ReadAllLines(jsonFilePath);
+        if (existingLines.Length == 0 || existingLines[0] != headerLine)
         {
-            string[] lines = File.ReadAllLines(jsonFilePath);
-            if (lines.Length == 0 || lines[0] != headerLine)
+            using StreamWriter sw = new(jsonFilePath);
+            sw.WriteLine(headerLine);
+            foreach (string line in existingLines)
             {
-                using (StreamWriter sw = new StreamWriter(jsonFilePath))
-                {
-                    sw.WriteLine(headerLine);
-                    foreach (string line in lines)
-                    {
-                        sw.WriteLine(line);
-                    }
-                }
+                sw.WriteLine(line);
             }
         }
     }
@@ -203,7 +207,7 @@ public class Helper
         if (!Configs.GetConfigData().EnableDebug) return;
 
         Console.ForegroundColor = ConsoleColor.Magenta;
-        string Prefix = $"[HealthBar]: ";
+        string Prefix = $"[HitMark]: ";
         Console.WriteLine(prefix?Prefix:"" + message);
         
         Console.ResetColor();
@@ -225,176 +229,198 @@ public class Helper
         return GetGameRules()?.WarmupPeriod ?? false;
     }
 
-    public static void SpawnHitMarks(CCSPlayerController player)
+    public static void InitializePlayerHUD(CCSPlayerController player)
     {
         var g_Main = HealthBarHitMarkGoldKingZ.Instance.g_Main;
-        if (player == null || !player.IsValid) return;
+        var api = HealthBarHitMarkGoldKingZ.GetGameHudApi();
+        var config = Configs.GetConfigData();
+        
+        if (player == null || !player.IsValid || api == null) return;
 
-        string hs_DefaultParticlePath = null!;
-        string hs_DefaultSoundPath = null!;
-        string hs_ParticlePath = null!;
-        string hs_SoundPath = null!;
-        foreach (var flag in Configs.GetConfigData().HM_HeadShot)
+        string? headSound = ResolveSoundForPlayer(config.HM_HeadShotSounds, player);
+        string? bodySound = ResolveSoundForPlayer(config.HM_BodyShotSounds, player);
+        var bodyColor = ParseColor(config.HM_BodyShotColor, Color.White);
+        float offsetX = config.HM_HudOffsetX;
+        float offsetY = config.HM_HudOffsetY;
+        float offsetZ = config.HM_HudDistance;
+        float damageOffsetX = offsetX + config.HM_DamageOffsetX;
+        float damageOffsetY = offsetY + config.HM_DamageOffsetY;
+        var damageColor = ParseColor(config.HM_DamageColor, Color.White);
+
+        try
         {
-            var parts = flag.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToArray();
-            if (parts.Length < 2) continue;
-
-            var Flag = parts[0];
-            var Path = parts[1];
-            var SoundPath = parts.Length >= 3 ? parts[2] : null;
-
-            if (Flag.Equals("ANY", StringComparison.OrdinalIgnoreCase))
-            {
-                if (hs_DefaultParticlePath == null)
-                {
-                    hs_DefaultParticlePath = Path;
-                }
-
-                if (SoundPath != null && hs_DefaultSoundPath == null)
-                {
-                    hs_DefaultSoundPath = SoundPath;
-                }
-                continue;
-            }
-
-            if (IsPlayerInGroupPermission(player, Flag))
-            {
-                hs_ParticlePath = Path;
-
-                if (SoundPath != null)
-                {
-                    hs_SoundPath = SoundPath;
-                }
-                break;
-            }
-        }
-
-        if (hs_ParticlePath == null)
-        {
-            hs_ParticlePath = hs_DefaultParticlePath!;
-            hs_SoundPath = hs_DefaultSoundPath!;
-        }
-
-
-        string bs_DefaultParticlePath = null!;
-        string bs_DefaultSoundPath = null!;
-        string bs_ParticlePath = null!;
-        string bs_SoundPath = null!;
-        foreach (var flag in Configs.GetConfigData().HM_BodyShot)
-        {
-            var parts = flag.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToArray();
-            if (parts.Length < 2) continue;
-
-            var Flag = parts[0];
-            var Path = parts[1];
-            var SoundPath = parts.Length >= 3 ? parts[2] : null;
-
-            if (Flag.Equals("ANY", StringComparison.OrdinalIgnoreCase))
-            {
-                if (bs_DefaultParticlePath == null)
-                {
-                    bs_DefaultParticlePath = Path;
-                }
-
-                if (SoundPath != null && bs_DefaultSoundPath == null)
-                {
-                    bs_DefaultSoundPath = SoundPath;
-                }
-                continue;
-            }
-
-            if (IsPlayerInGroupPermission(player, Flag))
-            {
-                bs_ParticlePath = Path;
-
-                if (SoundPath != null)
-                {
-                    bs_SoundPath = SoundPath;
-                }
-                break;
-            }
-        }
-
-        if (bs_ParticlePath == null)
-        {
-            bs_ParticlePath = bs_DefaultParticlePath!;
-            bs_SoundPath = bs_DefaultSoundPath!;
-        }
-
-
-        CParticleSystem headParticle = null!;
-        if (hs_ParticlePath != null)
-        {
-            headParticle = CreateHitMark(hs_ParticlePath);
-        }
-
-        CParticleSystem bodyParticle = null!;
-        if (bs_ParticlePath != null)
-        {
-            bodyParticle = CreateHitMark(bs_ParticlePath);
-        }
-
-        if (headParticle != null || bodyParticle != null)
-        {
-            g_Main.Player_Data.Add(player, new Globals.PlayerDataClass(
+            api.Native_GameHUD_SetParams(
                 player,
-                headParticle!,
-                hs_SoundPath!,
-                bodyParticle,
-                bs_SoundPath
-            ));
+                HitmarkIconChannel,
+            offsetX,
+            offsetY,
+            offsetZ,
+                bodyColor,
+                config.HM_BodyShotFontSize,
+                config.HM_FontName,
+                0.25f,
+                PointWorldTextJustifyHorizontal_t.POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER,
+                PointWorldTextJustifyVertical_t.POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER,
+                PointWorldTextReorientMode_t.POINT_WORLD_TEXT_REORIENT_AROUND_UP
+            );
 
-            if (headParticle != null)
-            {
-                g_Main.Particles_HS.Add(headParticle);
-            }
+            g_Main.Player_Data[player] = new Globals.PlayerDataClass(
+                player,
+                headSound ?? string.Empty,
+                bodySound ?? string.Empty
+            );
 
-            if (bodyParticle != null)
+            if (config.HM_ShowDamageValue)
             {
-                g_Main.Particles_BS.Add(bodyParticle);
+                api.Native_GameHUD_SetParams(
+                    player,
+                    HitmarkDamageChannel,
+                    damageOffsetX,
+                    damageOffsetY,
+                    offsetZ,
+                    damageColor,
+                    config.HM_DamageFontSize,
+                    config.HM_FontName,
+                    0.25f,
+                    PointWorldTextJustifyHorizontal_t.POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER,
+                    PointWorldTextJustifyVertical_t.POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER,
+                    PointWorldTextReorientMode_t.POINT_WORLD_TEXT_REORIENT_AROUND_UP
+                );
             }
+        }
+        catch (Exception ex)
+        {
+            DebugMessage($"Failed to initialize HUD for player {player.PlayerName}: {ex.Message}");
         }
     }
-    public static void StartHitMark(CCSPlayerController player, bool HeadShot)
+    
+    public static void StartHitMark(CCSPlayerController player, bool HeadShot, int damage)
     {
         var g_Main = HealthBarHitMarkGoldKingZ.Instance.g_Main;
-        if(player == null || !player.IsValid || !g_Main.Player_Data.ContainsKey(player))return;
+        var api = HealthBarHitMarkGoldKingZ.GetGameHudApi();
+        var config = Configs.GetConfigData();
+        
+        if(player == null || !player.IsValid || !g_Main.Player_Data.ContainsKey(player) || api == null) return;
 
         var playerData = g_Main.Player_Data[player];
 
-        if(HeadShot)
+        string icon = HeadShot ? config.HM_HeadShotIcon : config.HM_BodyShotIcon;
+        Color color = HeadShot ? ParseColor(config.HM_HeadShotColor, Color.White) : ParseColor(config.HM_BodyShotColor, Color.White);
+        int fontSize = HeadShot ? config.HM_HeadShotFontSize : config.HM_BodyShotFontSize;
+        float duration = HeadShot ? config.HM_HeadShotDuration : config.HM_BodyShotDuration;
+        float offsetX = config.HM_HudOffsetX;
+        float offsetY = config.HM_HudOffsetY;
+        float offsetZ = config.HM_HudDistance;
+        float damageOffsetX = offsetX + config.HM_DamageOffsetX;
+        float damageOffsetY = offsetY + config.HM_DamageOffsetY;
+        var damageColor = ParseColor(config.HM_DamageColor, Color.White);
+        int displayDamage = Math.Max(0, damage);
+        string damageText = $"-{displayDamage}";
+
+        try
         {
-            if(playerData.HeadShot != null && playerData.HeadShot.IsValid)
+            api.Native_GameHUD_UpdateParams(
+                player,
+                HitmarkIconChannel,
+            offsetX,
+            offsetY,
+            offsetZ,
+                color,
+                fontSize,
+                config.HM_FontName,
+                0.25f,
+                PointWorldTextJustifyHorizontal_t.POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER,
+                PointWorldTextJustifyVertical_t.POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER,
+                PointWorldTextReorientMode_t.POINT_WORLD_TEXT_REORIENT_AROUND_UP
+            );
+
+            api.Native_GameHUD_Show(player, HitmarkIconChannel, icon, duration);
+
+            if (config.HM_ShowDamageValue)
             {
-                playerData.HeadShot.AcceptInput("Stop");
-                playerData.HeadShot.AddEntityIOEvent("Start", null!, null!, "", 0.1f);
-                if(!string.IsNullOrEmpty(playerData.Sound_HeadShot))
-                {
-                    player.ExecuteClientCommand("play " + playerData.Sound_HeadShot);
-                }
+                api.Native_GameHUD_UpdateParams(
+                    player,
+                    HitmarkDamageChannel,
+                    damageOffsetX,
+                    damageOffsetY,
+                    offsetZ,
+                    damageColor,
+                    config.HM_DamageFontSize,
+                    config.HM_FontName,
+                    0.25f,
+                    PointWorldTextJustifyHorizontal_t.POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER,
+                    PointWorldTextJustifyVertical_t.POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER,
+                    PointWorldTextReorientMode_t.POINT_WORLD_TEXT_REORIENT_AROUND_UP
+                );
+
+                api.Native_GameHUD_Show(player, HitmarkDamageChannel, damageText, config.HM_DamageDuration);
             }
-        }else
-        {
-            if(playerData.BodyShot != null && playerData.BodyShot.IsValid)
+
+            if(HeadShot && !string.IsNullOrEmpty(playerData.Sound_HeadShot))
             {
-                playerData.BodyShot.AcceptInput("Stop");
-                playerData.BodyShot.AddEntityIOEvent("Start", null!, null!, "", 0.1f);
-                if(!string.IsNullOrEmpty(playerData.Sound_BodyShot))
-                {
-                    player.ExecuteClientCommand("play " + playerData.Sound_BodyShot);
-                }
+                player.ExecuteClientCommand("play " + playerData.Sound_HeadShot);
+            }
+            else if(!HeadShot && !string.IsNullOrEmpty(playerData.Sound_BodyShot))
+            {
+                player.ExecuteClientCommand("play " + playerData.Sound_BodyShot);
             }
         }
-        
+        catch (Exception ex)
+        {
+            DebugMessage($"Failed to show hitmark: {ex.Message}");
+        }
     }
 
-    public static CParticleSystem CreateHitMark(string path)
+    private static string? ResolveSoundForPlayer(List<string> entries, CCSPlayerController player)
     {
-        var entity = Utilities.CreateEntityByName<CParticleSystem>("info_particle_system");
-        if (entity == null) return null!;
-        
-        entity.EffectName = path;
-        entity.DispatchSpawn();
-        return entity;
+        string? defaultSound = null;
+        foreach (var entry in entries)
+        {
+            if (string.IsNullOrWhiteSpace(entry)) continue;
+
+            var parts = entry.Split('|', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToArray();
+            if (parts.Length == 0) continue;
+
+            var flag = parts[0];
+            var soundPath = parts.Length >= 2 ? parts[1] : null;
+
+            if (flag.Equals("ANY", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrEmpty(soundPath) && defaultSound == null)
+                {
+                    defaultSound = soundPath;
+                }
+                continue;
+            }
+
+            if (IsPlayerInGroupPermission(player, flag))
+            {
+                return soundPath ?? defaultSound;
+            }
+        }
+
+        return defaultSound;
+    }
+
+    private static Color ParseColor(string colorValue, Color fallback)
+    {
+        if (string.IsNullOrWhiteSpace(colorValue)) return fallback;
+
+        try
+        {
+            if (colorValue.StartsWith("#"))
+            {
+                return ColorTranslator.FromHtml(colorValue);
+            }
+
+            var color = Color.FromName(colorValue);
+            return color.A == 0 && !string.Equals(colorValue, "Transparent", StringComparison.OrdinalIgnoreCase)
+                ? fallback
+                : color;
+        }
+        catch
+        {
+            return fallback;
+        }
     }
 }

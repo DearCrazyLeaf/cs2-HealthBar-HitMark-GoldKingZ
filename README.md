@@ -1,3 +1,9 @@
+> **HLYM Edition** – 非官方维护版本，保留原版 README 说明，仅补充：
+> - 使用 GameHUD API 重写 HitMark（图标/伤害独立通道，新增偏移 + 字体/颜色配置）。
+> - 移除 HealthBar 功能与旧粒子依赖，保留声音预缓存机制。
+> - 扩展配置模板、迁移说明、.gitignore 等开发者体验改进。
+> - 所有新增开关与字段详见 `config/config.json` 顶部注释。
+
 ## .:[ Join Our Discord For Support ]:.
 
 <a href="https://discord.com/invite/U7AuQhu"><img src="https://discord.com/api/guilds/651838917687115806/widget.png?style=banner2"></a>
@@ -35,15 +41,29 @@ Show HealthBar , Custom HitMarks , Custom Sounds
 
 | Property | Description | Values | Required |  
 |----------|-------------|--------|----------|  
-| `CS2_HealthBar` | Enable CS2 HealthBar | `true`/`false` | - |  
-| `CS2_DisableOnWarmUp` | Disable CS2 HealthBar On WarmUp | `true`/`false` | - |  
-| `CS_DisplayHealthBarStyle` | HealthBar Style | `0`-Green With Red<br>`1`-Orange With Grey<br>`2`-Green With Light Green | `CS2_HealthBar=true` |  
-| `CS2_ShowHealthBarTo` | Show HealthBar To | `1`-All<br>`2`-Attacker Only<br>`3`-Victim Team<br>`4`-Attacker Team | `CS2_HealthBar=true` |  
-| `HM_HealthBar` | Enable HitMark | `true`/`false` | - |  
+| `HM_EnableHitMark` | Enable HitMark | `true`/`false` | - |  
 | `HM_DisableOnWarmUp` | Disable HitMark On WarmUp | `true`/`false` | - |  
-| `HM_MuteDefaultHeadShotBodyShot` | Mute Default HeadShot And BodyShot Only On If There Is Custom Sounds | `true`/`false` | `CS2_HealthBar=true` |  
-| `HM_HeadShot` | SetUp HeadShot | `<PlayerFlag or PlayerGroup or PlayerSteam or ANY>`|`<Path>`|`<Optional SoundPath>` | `CS2_HealthBar=true` |  
-| `HM_BodyShot` | SetUp BodyShot | `<PlayerFlag or PlayerGroup or PlayerSteam or ANY>`|`<Path>`|`<Optional SoundPath>` | `CS2_HealthBar=true` |  
+| `HM_MuteDefaultHeadShotBodyShot` | Mute default hit sounds when custom sounds exist | `true`/`false` | - |  
+| `HM_HeadShotIcon` | Text/icon displayed for headshots | Any short text | `HM_EnableHitMark=true` |  
+| `HM_HeadShotColor` | Headshot icon color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` |  
+| `HM_HeadShotFontSize` | Headshot icon font size | `8-72` | `HM_EnableHitMark=true` |  
+| `HM_HeadShotDuration` | Headshot icon duration (seconds) | `float` | `HM_EnableHitMark=true` |  
+| `HM_BodyShotIcon` | Text/icon displayed for body shots | Any short text | `HM_EnableHitMark=true` |  
+| `HM_BodyShotColor` | Body shot icon color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` |  
+| `HM_BodyShotFontSize` | Body shot icon font size | `8-72` | `HM_EnableHitMark=true` |  
+| `HM_BodyShotDuration` | Body shot icon duration (seconds) | `float` | `HM_EnableHitMark=true` |  
+| `HM_FontName` | HUD font family | Installed font name | `HM_EnableHitMark=true` |  
+| `HM_ShowDamageValue` | Append damage digits after the icon | `true`/`false` | `HM_EnableHitMark=true` |  
+| `HM_DamageColor` | Damage number color (`#RRGGBB` or color name) | String | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_DamageFontSize` | Damage number font size | `8-72` | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_DamageDuration` | Damage number duration (seconds) | `float` | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_DamageOffsetX` | Damage number X offset relative to icon (-30 to 30) | Float | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_DamageOffsetY` | Damage number Y offset relative to icon (-15 to 15) | Float | `HM_EnableHitMark=true` & `HM_ShowDamageValue=true` |  
+| `HM_HudOffsetX` | Horizontal HUD offset (-50 to 50 recommended) | Float | `HM_EnableHitMark=true` |  
+| `HM_HudOffsetY` | Vertical HUD offset (-10 to 10 recommended) | Float | `HM_EnableHitMark=true` |  
+| `HM_HudDistance` | Distance from player view to HUD (40 to 70 recommended) | Float | `HM_EnableHitMark=true` |  
+| `HM_HeadShotSounds` | Headshot sound mapping list (`Flag|SoundPath`) | Array of strings | `HM_EnableHitMark=true` |  
+| `HM_BodyShotSounds` | Body shot sound mapping list (`Flag|SoundPath`) | Array of strings | `HM_EnableHitMark=true` |  
 | `EnableDebug` | Debug mode | `true`/`false` | - |  
 
 
@@ -58,7 +78,7 @@ Show HealthBar , Custom HitMarks , Custom Sounds
 
 ### [1.0.1]
 - Added CS2_ShowHealthBarTo 3 = Victim Team 4 = Attacker Team
-- Added HM_HealthBar
+- Added HM_EnableHitMark
 - Added HM_DisableOnWarmUp
 - Added HM_MuteDefaultHeadShotBodyShot
 - Added HM_HeadShot

@@ -1,0 +1,97 @@
+{
+// ----------------------------[ ↓ Plugin Info ↓ ]----------------------------
+
+  "Version": "2.0.0",
+
+// ----------------------------[ ↓ HitMark Config ↓ ]----------------------------
+
+// Enable HitMark?
+// true = Yes
+// false = No
+  "HM_EnableHitMark": true,
+
+// Disable HitMark On WarmUp?
+// true = Yes
+// false = No
+  "HM_DisableOnWarmUp": false,
+
+// Mute Default HeadShot And BodyShot Only On If There Is Custom Sounds?
+// true = Yes
+// false = No
+  "HM_MuteDefaultHeadShotBodyShot": false,
+
+// HeadShot icon text (Example: X or ✕)
+  "HM_HeadShotIcon": "✕",
+
+// HeadShot icon color (#RRGGBB or color name)
+  "HM_HeadShotColor": "#FF0000",
+
+// HeadShot icon font size
+  "HM_HeadShotFontSize": 20,
+
+// HeadShot icon display duration (seconds)
+  "HM_HeadShotDuration": 0.3,
+
+// BodyShot icon text (Example: +)
+  "HM_BodyShotIcon": "✕",
+
+// BodyShot icon color (#RRGGBB or color name)
+  "HM_BodyShotColor": "#FFFFFF",
+
+// BodyShot icon font size
+  "HM_BodyShotFontSize": 18,
+
+// BodyShot icon display duration (seconds)
+  "HM_BodyShotDuration": 0.25,
+
+// Font name used for HitMark HUD text
+  "HM_FontName": "Arial Rounded MT Bold",
+
+// Show damage value next to icon? true = Yes / false = No
+  "HM_ShowDamageValue": true,
+
+// Damage number color (#RRGGBB or color name)
+  "HM_DamageColor": "#FFFFFF",
+
+// Damage number font size
+  "HM_DamageFontSize": 20,
+
+// Damage number display duration (seconds)
+  "HM_DamageDuration": 0.3,
+
+// Damage number horizontal offset relative to icon (-30 to 30 recommended)
+  "HM_DamageOffsetX": 5.5,
+
+// Damage number vertical offset relative to icon (-15 to 15 recommended)
+  "HM_DamageOffsetY": 3.5,
+
+// Horizontal HUD offset relative to view origin (-50 to 50 recommended)
+  "HM_HudOffsetX": 0,
+
+// Vertical HUD offset relative to view origin (-10 to 10 recommended)
+  "HM_HudOffsetY": 0,
+
+// Distance from player view to HUD text (40 to 70 recommended)
+  "HM_HudDistance": 42,
+
+// Set up HeadShot sounds per player/group. Format: <PlayerFlag or Group or SteamID or ANY>|<SoundPath>
+  "HM_HeadShotSounds": [
+
+    "ANY | sounds/goldkingz/hitmark/headshot.vsnd"
+  ],
+
+// Set up BodyShot sounds per player/group. Format: <PlayerFlag or Group or SteamID or ANY>|<SoundPath>
+  "HM_BodyShotSounds": [
+
+    "ANY | sounds/goldkingz/hitmark/bodyhit.vsnd"
+  ],
+
+
+// ----------------------------[ ↓ Utilities  ↓ ]----------------------------
+
+// Enable Debug Plugin In Server Console (Helps You To Debug Issues You Facing)?
+// true = Yes
+// false = No
+  "EnableDebug": false
+
+}

@@ -12,18 +12,25 @@ using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Timers;
+using CS2_GameHUDAPI;
+using CounterStrikeSharp.API.Core.Capabilities;
+using System.IO;
 
 namespace HealthBar_HitMark_GoldKingZ;
 
 
 public class HealthBarHitMarkGoldKingZ : BasePlugin
 {
-    public override string ModuleName => "Show HealthBar , Custom HitMarks , Custom Sounds";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleName => "Custom HitMarks with Sounds (GameHUD)";
+    public override string ModuleVersion => "2.0.0";
     public override string ModuleAuthor => "Gold KingZ";
     public override string ModuleDescription => "https://github.com/oqyh";
 	public static HealthBarHitMarkGoldKingZ Instance { get; set; } = new();
     public Globals g_Main = new();
+    
+    private static IGameHUDAPI? _gameHudApi;
+    private static PluginCapability<IGameHUDAPI> PluginCapability = new("gamehud:api");
+    
     public override void Load(bool hotReload)
     {
         Instance = this;
@@ -33,10 +40,9 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
     
         RegisterEventHandler<EventPlayerHurt>(OnEventPlayerHurt);
         RegisterEventHandler<EventRoundStart>(OnEventRoundStart);
-        RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
-        RegisterListener<Listeners.CheckTransmit>(CheckTransmit);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
+        RegisterListener<Listeners.OnServerPrecacheResources>(OnServerPrecacheResources);
 
 
         if(Configs.GetConfigData().HM_MuteDefaultHeadShotBodyShot)
@@ -63,48 +69,45 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
     {
         try
         {
-            string filePath = $"{ModuleDirectory}/../../plugins/HealthBar-HitMark-GoldKingZ/config/ServerPrecacheResources.txt";
+            string configDir = Path.Combine(ModuleDirectory, "config");
+            string filePath = Path.Combine(configDir, "ServerPrecacheResources.txt");
 
-            string[] lines = File.ReadAllLines(filePath);
+            Helper.CreateResource(filePath);
 
-            foreach (string line in lines)
+            foreach (string line in File.ReadAllLines(filePath))
             {
-                if (line.TrimStart().StartsWith("//"))continue;
-                manifest.AddResource(line);
+                var trimmed = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed) || trimmed.StartsWith("//"))
+                {
+                    continue;
+                }
+                manifest.AddResource(trimmed);
             }
         }
         catch (Exception ex)
         {
-            Helper.DebugMessage(ex.Message);
+            Helper.DebugMessage($"[HitMark] Failed to precache resources: {ex.Message}");
         }
     }
 
-    public void CheckTransmit(CCheckTransmitInfoList infoList)
+    public override void OnAllPluginsLoaded(bool hotReload)
     {
-        foreach ((CCheckTransmitInfo info, CCSPlayerController? player) in infoList)
+        try
         {
-            if (player == null || !player.IsValid)continue;
-            if (!g_Main.Player_Data.TryGetValue(player, out var playerData))continue;
-
-            foreach (var particle_hs in g_Main.Particles_HS)
+            _gameHudApi = PluginCapability.Get();
+            if (_gameHudApi == null)
             {
-                if (particle_hs == null || !particle_hs.IsValid)continue;
-
-                if (playerData.HeadShot != null && playerData.HeadShot.IsValid && particle_hs != playerData.HeadShot)
-                {
-                    info.TransmitEntities.Remove(particle_hs);
-                }
+                Helper.DebugMessage("[HitMark] GameHUD API not found! Plugin will not work correctly.");
             }
-
-            foreach (var particle_bs in g_Main.Particles_BS)
+            else
             {
-                if (particle_bs == null || !particle_bs.IsValid)continue;
-
-                if (playerData.BodyShot != null && playerData.BodyShot.IsValid && particle_bs != playerData.BodyShot)
-                {
-                    info.TransmitEntities.Remove(particle_bs);
-                }
+                Helper.DebugMessage("[HitMark] GameHUD API loaded successfully!");
             }
+        }
+        catch (Exception ex)
+        {
+            _gameHudApi = null;
+            Helper.DebugMessage($"[HitMark] Failed to load GameHUD API: {ex.Message}");
         }
     }
 
@@ -118,7 +121,7 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
         {
             if(players == null || !players.IsValid)continue;
 
-            Helper.SpawnHitMarks(players);
+            Helper.InitializePlayerHUD(players);
         }
         return HookResult.Continue;
     }
@@ -134,7 +137,6 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
 
         if (victim == null || !victim.IsValid || victim.PlayerPawn == null || !victim.PlayerPawn.IsValid
         || victim.PlayerPawn.Value == null || !victim.PlayerPawn.Value.IsValid) return HookResult.Continue;
-        var victimHealth = victim.PlayerPawn.Value.MaxHealth;
 
         var attacker = @event.Attacker;
         if (attacker == null || !attacker.IsValid) return HookResult.Continue;
@@ -144,58 +146,18 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
 
         float oldHealth = health + dmgHealth;
         if (oldHealth == health) return HookResult.Continue;
-
-        float oldHealthRatio = oldHealth / victimHealth;
-        float newHealthRatio = (float)health / victimHealth;
         
-        if(Configs.GetConfigData().CS2_HealthBar)
-        {
-            if(!Configs.GetConfigData().CS2_DisableOnWarmUp || Configs.GetConfigData().CS2_DisableOnWarmUp && !Helper.IsWarmup())
-            {
-                var message = UserMessage.FromPartialName("UpdateScreenHealthBar");
-                message.SetInt("entidx", (int)victim.PlayerPawn.Index);
-                message.SetFloat("healthratio_old", oldHealthRatio);
-                message.SetFloat("healthratio_new", newHealthRatio);
-                message.SetInt("style", Configs.GetConfigData().CS_DisplayHealthBarStyle);
-                if(Configs.GetConfigData().CS2_ShowHealthBarTo == 1)
-                {
-                    message.Recipients.AddAllPlayers();
-                    message.Send();
-                }else if(Configs.GetConfigData().CS2_ShowHealthBarTo == 2)
-                {
-                    message.Send(attacker);
-                }else
-                {
-                    foreach(var players in Helper.GetPlayersController(false,false))
-                    {
-                        if(players == null || !players.IsValid)continue;
-                        if(Configs.GetConfigData().CS2_ShowHealthBarTo == 3 && victim.TeamNum != players.TeamNum)continue;
-                        if(Configs.GetConfigData().CS2_ShowHealthBarTo == 4 && attacker.TeamNum != players.TeamNum)continue;
-
-                        message.Send(players);
-                    }
-                }
-            }
-        }
-
-        if(Configs.GetConfigData().HM_HealthBar)
+        if(Configs.GetConfigData().HM_EnableHitMark)
         {
             if(!Configs.GetConfigData().HM_DisableOnWarmUp || Configs.GetConfigData().HM_DisableOnWarmUp && !Helper.IsWarmup())
             {
                 if(Hitgroup == 1)
                 {
-                    Helper.StartHitMark(attacker, true);
-                    if (g_Main.Player_Data.TryGetValue(attacker, out var playerData))
-                    {
-                        if(!string.IsNullOrEmpty(playerData.Sound_HeadShot))
-                        {
-                            attacker.ExecuteClientCommand("play " + playerData.Sound_HeadShot);
-                        }
-                    }
-                }else
+                    Helper.StartHitMark(attacker, true, dmgHealth);
+                }
+                else
                 {
-                    Helper.StartHitMark(attacker, false);
-                    
+                    Helper.StartHitMark(attacker, false, dmgHealth);
                 }
             }
         }
@@ -225,13 +187,8 @@ public class HealthBarHitMarkGoldKingZ : BasePlugin
         Helper.ClearVariables();
     }
 
-
-    /* [ConsoleCommand("css_test", "test")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    public void test(CCSPlayerController? player, CommandInfo commandInfo)
+    public static IGameHUDAPI? GetGameHudApi()
     {
-        if(player == null || !player.IsValid)return;
-
-        
-    } */
+        return _gameHudApi;
+    }
 }

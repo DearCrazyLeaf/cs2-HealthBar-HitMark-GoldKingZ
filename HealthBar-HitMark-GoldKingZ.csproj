@@ -16,6 +16,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="CS2-GameHUDAPI">
+      <HintPath>..\CS2-GameHUD\CS2-GameHUDAPI\bin\Debug\net8.0\CS2-GameHUDAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ConfigData\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\config.json</Link>
+    </None>
+    <None Include="ConfigData\ServerPrecacheResources.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\ServerPrecacheResources.txt</Link>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
