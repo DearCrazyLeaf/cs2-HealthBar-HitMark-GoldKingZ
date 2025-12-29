@@ -334,9 +334,10 @@ public class Helper
                 ApplyDamageLayers(api, player, damageLayers, damageStartX, damageStartY, offsetZ, config, initialize:false);
                 ShowDamageLayers(api, player, damageLayers, damageText, config.HM_DamageDuration);
 
+                int animToken = ++playerData.DamageAnimToken;
                 if (config.HM_DamageMotionMode == 1)
                 {
-                    StartDamageBounceAnimation(api, player, damageLayers, damageStartX, damageStartY, offsetZ, config);
+                    StartDamageBounceAnimation(api, player, damageLayers, damageStartX, damageStartY, offsetZ, config, animToken);
                 }
             }
 
@@ -568,7 +569,7 @@ public class Helper
         return (float)(sample * maxRange);
     }
 
-    private static void StartDamageBounceAnimation(IGameHUDAPI api, CCSPlayerController player, IReadOnlyList<DamageLayer> layers, float centerX, float centerY, float offsetZ, Configs.ConfigData config)
+    private static void StartDamageBounceAnimation(IGameHUDAPI api, CCSPlayerController player, IReadOnlyList<DamageLayer> layers, float centerX, float centerY, float offsetZ, Configs.ConfigData config, int animToken)
     {
         float bounceHeight = MathF.Max(0f, config.HM_DamageBounceHeight);
         float bounceDuration = MathF.Max(0.05f, config.HM_DamageBounceDuration);
@@ -596,6 +597,12 @@ public class Helper
             pluginInstance.AddTimer(delay, () =>
             {
                 if (api == null || player == null || !player.IsValid)
+                {
+                    return;
+                }
+
+                var g_Main = HealthBarHitMarkGoldKingZ.Instance.g_Main;
+                if (!g_Main.Player_Data.TryGetValue(player, out var playerData) || playerData.DamageAnimToken != animToken)
                 {
                     return;
                 }

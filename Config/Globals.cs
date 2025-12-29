@@ -11,13 +11,15 @@ public class Globals
     {
         public CCSPlayerController Player { get; set; }
         public string Sound_HeadShot { get; set; }       
-        public string Sound_BodyShot { get; set; }       
+        public string Sound_BodyShot { get; set; }
+        public int DamageAnimToken { get; set; }
     
         public PlayerDataClass(CCSPlayerController player, string sound_HeadShot, string sound_BodyShot)
         {
             Player = player;
             Sound_HeadShot = sound_HeadShot;
             Sound_BodyShot = sound_BodyShot;
+            DamageAnimToken = 0;
         }
     }
     public Dictionary<CCSPlayerController, PlayerDataClass> Player_Data = new Dictionary<CCSPlayerController, PlayerDataClass>();
